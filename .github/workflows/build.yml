@@ -36,7 +36,7 @@ jobs:
         run: |
           git clone --depth 1 --filter=blob:none --sparse \
             https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86 clangpre
-          (cd clangpre && git sparse-checkout set clang-r416183b && rm -rf .git)
+          (cd clangpre && git sparse-checkout set clang-r416183b)
           echo "$PWD/clangpre/clang-r416183b/bin" >> "$GITHUB_PATH"
           clang --version
 
