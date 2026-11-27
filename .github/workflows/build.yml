@@ -53,7 +53,10 @@ jobs:
           make ARCH=arm64 LLVM=1 HOSTCC=gcc HOSTCXX=g++ HOSTLD=ld.bfd -j"$(nproc)" modules_prepare 2>&1 | tee /tmp/prep.log || { echo "=== PREP FAILED ==="; tail -80 /tmp/prep.log; df -h; exit 1; }
 
       - name: build kdrw.ko
-        run: make -C linux M="$PWD/kbuild" ARCH=arm64 LLVM=1 HOSTCC=gcc HOSTLD=ld.bfd modules
+        run: |
+          export CC="$PWD/clangpre/clang-r416183b/bin/clang"
+          $CC --version | head -1
+          make -C linux M="$PWD/kbuild" ARCH=arm64 LLVM=1 CC="$CC" HOSTCC=gcc HOSTLD=ld.bfd modules 2>&1 | tee /tmp/mod.log || { echo "=== MODULE BUILD FAILED ==="; tail -80 /tmp/mod.log; exit 1; }
 
       - name: pack kdrw.sh
         run: |
