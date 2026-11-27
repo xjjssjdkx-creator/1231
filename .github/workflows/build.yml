@@ -34,11 +34,9 @@ jobs:
       # 必须与手机内核同版本 clang(12.0.5/r416183b)，否则 CFI 类型 id 不匹配会 panic
       - name: android clang r416183b
         run: |
-          git clone --depth 1 --filter=blob:none --sparse \
-            https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86 clangpre
-          (cd clangpre && git sparse-checkout set clang-r416183b)
-          echo "$PWD/clangpre/clang-r416183b/bin" >> "$GITHUB_PATH"
-          clang --version
+          git clone --depth 1 https://github.com/Guxin12/clang-12.0.5-r416183b clangpre
+          echo "$PWD/clangpre/bin" >> "$GITHUB_PATH"
+          $PWD/clangpre/bin/clang --version | head -1
 
       - name: kernel tree GKI android12-5.10
         run: |
@@ -54,7 +52,7 @@ jobs:
 
       - name: build kdrw.ko
         run: |
-          export CC="$PWD/clangpre/clang-r416183b/bin/clang"
+          export CC="$PWD/clangpre/bin/clang"
           $CC --version | head -1
           make -C linux M="$PWD/kbuild" ARCH=arm64 LLVM=1 CC="$CC" HOSTCC=gcc HOSTLD=ld.bfd modules
           ls -la kbuild/kdrw.ko
