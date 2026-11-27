@@ -48,10 +48,9 @@ jobs:
           cd linux
           make ARCH=arm64 LLVM=1 HOSTCC=gcc HOSTCXX=g++ HOSTLD=ld.bfd gki_defconfig
           make ARCH=arm64 LLVM=1 HOSTCC=gcc HOSTCXX=g++ HOSTLD=ld.bfd -j"$(nproc)" modules_prepare
-          make ARCH=arm64 LLVM=1 HOSTCC=gcc HOSTCXX=g++ HOSTLD=ld.bfd -j"$(nproc)" modules
 
       - name: build kdrw.ko
-        run: make -C linux M="$PWD/kbuild" ARCH=arm64 LLVM=1 modules
+        run: make -C linux M="$PWD/kbuild" ARCH=arm64 LLVM=1 HOSTCC=gcc HOSTLD=ld.bfd modules
 
       - name: pack kdrw.sh
         run: |
