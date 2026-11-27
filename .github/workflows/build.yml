@@ -29,7 +29,7 @@ jobs:
       - name: host deps
         run: |
           sudo apt-get update
-          sudo apt-get install -y git make bc bison flex libssl-dev libelf-dev python3 build-essential gcc g++
+          sudo apt-get install -y git make bc bison flex libssl-dev libelf-dev python3 build-essential gcc g++ lld
 
       # 必须与手机内核同版本 clang(12.0.5/r416183b)，否则 CFI 类型 id 不匹配会 panic
       - name: android clang r416183b
@@ -46,9 +46,9 @@ jobs:
       - name: config + prepare + build symbols
         run: |
           cd linux
-          make ARCH=arm64 LLVM=1 HOSTCC=gcc HOSTCXX=g++ gki_defconfig
-          make ARCH=arm64 LLVM=1 HOSTCC=gcc HOSTCXX=g++ -j"$(nproc)" modules_prepare
-          make ARCH=arm64 LLVM=1 HOSTCC=gcc HOSTCXX=g++ -j"$(nproc)" modules
+          make ARCH=arm64 LLVM=1 HOSTCC=gcc HOSTCXX=g++ HOSTLD=ld.bfd gki_defconfig
+          make ARCH=arm64 LLVM=1 HOSTCC=gcc HOSTCXX=g++ HOSTLD=ld.bfd -j"$(nproc)" modules_prepare
+          make ARCH=arm64 LLVM=1 HOSTCC=gcc HOSTCXX=g++ HOSTLD=ld.bfd -j"$(nproc)" modules
 
       - name: build kdrw.ko
         run: make -C linux M="$PWD/kbuild" ARCH=arm64 LLVM=1 modules
