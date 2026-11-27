@@ -47,7 +47,6 @@ jobs:
       - name: config + prepare + build symbols
         run: |
           cd linux
-          cd linux
           export CC="$PWD/../clangpre/bin/clang --target=aarch64-linux-gnu"
           make ARCH=arm64 LLVM=1 LLVM_IAS=1 CC="$CC" HOSTCC=gcc HOSTCXX=g++ HOSTLD=ld.bfd gki_defconfig
           make ARCH=arm64 LLVM=1 LLVM_IAS=1 CC="$CC" HOSTCC=gcc HOSTCXX=g++ HOSTLD=ld.bfd -j"$(nproc)" modules_prepare
