@@ -54,7 +54,7 @@ jobs:
         run: |
           export CC="$PWD/clangpre/bin/clang --target=aarch64-linux-gnu"
           $CC --version | head -1
-          make -C linux M="$PWD/kbuild" ARCH=arm64 LLVM=1 CC="$CC" HOSTCC=gcc HOSTLD=ld.bfd modules
+          make -C linux M="$PWD/kbuild" ARCH=arm64 LLVM=1 LLVM_IAS=1 CC="$CC" HOSTCC=gcc HOSTLD=ld.bfd modules
           ls -la kbuild/kdrw.ko
 
       - name: pack kdrw.sh
