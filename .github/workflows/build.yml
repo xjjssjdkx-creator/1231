@@ -56,7 +56,8 @@ jobs:
         run: |
           export CC="$PWD/clangpre/clang-r416183b/bin/clang"
           $CC --version | head -1
-          make -C linux M="$PWD/kbuild" ARCH=arm64 LLVM=1 CC="$CC" HOSTCC=gcc HOSTLD=ld.bfd modules 2>&1 | tee /tmp/mod.log || { echo "=== MODULE BUILD FAILED ==="; tail -80 /tmp/mod.log; exit 1; }
+          make -C linux M="$PWD/kbuild" ARCH=arm64 LLVM=1 CC="$CC" HOSTCC=gcc HOSTLD=ld.bfd modules
+          ls -la kbuild/kdrw.ko
 
       - name: pack kdrw.sh
         run: |
