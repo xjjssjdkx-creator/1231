@@ -47,9 +47,10 @@ jobs:
       - name: config + prepare + build symbols
         run: |
           cd linux
-          make ARCH=arm64 LLVM=1 HOSTCC=gcc HOSTCXX=g++ HOSTLD=ld.bfd gki_defconfig 2>&1 | tee /tmp/cfg.log || { tail -60 /tmp/cfg.log; exit 1; }
-          make ARCH=arm64 LLVM=1 HOSTCC=gcc HOSTCXX=g++ HOSTLD=ld.bfd -j"$(nproc)" modules_prepare 2>&1 | tee /tmp/prep.log || { echo "=== PREP FAILED ==="; tail -80 /tmp/prep.log; df -h; exit 1; }
-          make ARCH=arm64 LLVM=1 HOSTCC=gcc HOSTCXX=g++ HOSTLD=ld.bfd -j"$(nproc)" modules
+          export CC="$PWD/../clangpre/bin/clang --target=aarch64-linux-gnu"
+          make ARCH=arm64 LLVM=1 LLVM_IAS=1 CC="$CC" HOSTCC=gcc HOSTCXX=g++ HOSTLD=ld.bfd gki_defconfig 2>&1 | tee /tmp/cfg.log || { tail -60 /tmp/cfg.log; exit 1; }
+          make ARCH=arm64 LLVM=1 LLVM_IAS=1 CC="$CC" HOSTCC=gcc HOSTCXX=g++ HOSTLD=ld.bfd -j"$(nproc)" modules_prepare 2>&1 | tee /tmp/prep.log || { echo "=== PREP FAILED ==="; tail -80 /tmp/prep.log; df -h; exit 1; }
+          make ARCH=arm64 LLVM=1 LLVM_IAS=1 CC="$CC" HOSTCC=gcc HOSTCXX=g++ HOSTLD=ld.bfd -j"$(nproc)" modules
 
       - name: build kdrw.ko
         run: |
