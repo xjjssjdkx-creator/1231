@@ -36,18 +36,21 @@ jobs:
         run: |
           git clone --depth 1 --filter=blob:none --sparse \
             https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86 clangpre
-          (cd clangpre && git sparse-checkout set clang-r416183b)
+          (cd clangpre && git sparse-checkout set clang-r416183b && rm -rf .git)
           echo "$PWD/clangpre/clang-r416183b/bin" >> "$GITHUB_PATH"
           clang --version
 
       - name: kernel tree GKI android12-5.10
-        run: git clone --depth 1 -b android12-5.10 https://android.googlesource.com/kernel/common linux
+        run: |
+          git clone --depth 1 -b android12-5.10 https://android.googlesource.com/kernel/common linux
+          rm -rf linux/.git
+          df -h .
 
       - name: config + prepare + build symbols
         run: |
           cd linux
-          make ARCH=arm64 LLVM=1 HOSTCC=gcc HOSTCXX=g++ HOSTLD=ld.bfd gki_defconfig
-          make ARCH=arm64 LLVM=1 HOSTCC=gcc HOSTCXX=g++ HOSTLD=ld.bfd -j"$(nproc)" modules_prepare
+          make ARCH=arm64 LLVM=1 HOSTCC=gcc HOSTCXX=g++ HOSTLD=ld.bfd gki_defconfig 2>&1 | tee /tmp/cfg.log || { tail -60 /tmp/cfg.log; exit 1; }
+          make ARCH=arm64 LLVM=1 HOSTCC=gcc HOSTCXX=g++ HOSTLD=ld.bfd -j"$(nproc)" modules_prepare 2>&1 | tee /tmp/prep.log || { echo "=== PREP FAILED, last 80 lines ==="; tail -80 /tmp/prep.log; echo "=== DISK ==="; df -h; exit 1; }
 
       - name: build kdrw.ko
         run: make -C linux M="$PWD/kbuild" ARCH=arm64 LLVM=1 HOSTCC=gcc HOSTLD=ld.bfd modules
